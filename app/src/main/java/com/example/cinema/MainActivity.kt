@@ -2,6 +2,7 @@ package com.example.cinema
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.core.Spring
@@ -10,17 +11,36 @@ import androidx.compose.animation.core.spring
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.cinema.ui.theme.CinemaTheme
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
+import com.example.cinema.service.SessionManager
 
 class MainActivity : ComponentActivity() {
+
+    private var token: String? = null
+    private var session: SessionManager? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -28,6 +48,9 @@ class MainActivity : ComponentActivity() {
                 MyApp()
             }
         }
+
+        this.token = null
+        this.session =  SessionManager(this)
     }
 }
 
@@ -47,7 +70,6 @@ fun DefaultPreview() {
 
 @Composable
 fun MyApp() {
-
     var shouldShowOnBoarding by rememberSaveable { mutableStateOf(true) }
 
     if (shouldShowOnBoarding) {
@@ -109,21 +131,105 @@ fun Greeting(name: String) {
 
 @Composable
 fun OnboardingScreen(onContinueClicked: () -> Unit) {
-
-    Surface() {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text("Welcome to the Cinema")
-            Button(
-                modifier = Modifier.padding(vertical = 24.dp),
-                onClick = onContinueClicked
-            ) {
-              Text(text = "Continue")
+    val context = LocalContext.current
+    val username = remember { mutableStateOf(TextFieldValue()) }
+    val usernameErrorState = remember { mutableStateOf(false) }
+    val passwordErrorState = remember { mutableStateOf(false) }
+    val password = remember { mutableStateOf(TextFieldValue()) }
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+    ) {
+        Text(text = buildAnnotatedString {
+            withStyle(style = SpanStyle(color = Color.Red)) {
+                append("C")
             }
+            withStyle(style = SpanStyle(color = Color.White)) {
+                append("inéma")
+            }
+
+        }, fontSize = 30.sp)
+        Spacer(Modifier.size(16.dp))
+        OutlinedTextField(
+            value = username.value,
+            onValueChange = {
+                if (usernameErrorState.value) {
+                    usernameErrorState.value = false
+                }
+                username.value = it
+            },
+            isError = usernameErrorState.value,
+            modifier = Modifier.fillMaxWidth(),
+            label = {
+                Text(text = "Nom d'utilisateur")
+            },
+            colors = TextFieldDefaults.textFieldColors(textColor = Color.White)
+        )
+        if (usernameErrorState.value) {
+            Text(text = "Champs obligatoire", color = Color.Red)
         }
+        Spacer(Modifier.size(16.dp))
+        val passwordVisibility = remember { mutableStateOf(true) }
+        OutlinedTextField(
+            value = password.value,
+            onValueChange = {
+                if (passwordErrorState.value) {
+                    passwordErrorState.value = false
+                }
+                password.value = it;
+            },
+            isError = passwordErrorState.value,
+            modifier = Modifier.fillMaxWidth(),
+            label = {
+                Text(text = "Mot de passe");
+            },
+            trailingIcon = {
+                IconButton(onClick = {
+                    passwordVisibility.value = !passwordVisibility.value
+                }) {
+                    Icon(
+                        imageVector = if (passwordVisibility.value) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                        contentDescription = "visibility",
+                        tint = Color.Red
+                    )
+                }
+            },
+            visualTransformation = if (passwordVisibility.value) PasswordVisualTransformation() else VisualTransformation.None,
+            colors = TextFieldDefaults.textFieldColors(textColor = Color.White)
+        )
+        if (passwordErrorState.value) {
+            Text(text = "Champs obligatoire", color = Color.Red)
+        }
+        Spacer(Modifier.size(16.dp))
+        Button(
+            onClick = {
+                when {
+                    username.value.text.isEmpty() -> {
+                        usernameErrorState.value = true
+                    }
+                    password.value.text.isEmpty() -> {
+                        passwordErrorState.value = true
+                    }
+                    else -> {
+                        passwordErrorState.value = false
+                        usernameErrorState.value = false
+                        Toast.makeText(
+                            context,
+                            "Logged in successfully",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+
+            },
+            content = {
+                Text(text = "Connexion", color = Color.White)
+            },
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red)
+        )
     }
 }
 
