@@ -2,7 +2,10 @@ package com.example.cinema.service
 
 import com.example.cinema.domain.Client
 import retrofit2.Call
-import retrofit2.http.*
+import retrofit2.http.Body
+import retrofit2.http.GET
+import retrofit2.http.POST
+
 interface ServiceClient {
 
 // requête d'appel des clients  GET
