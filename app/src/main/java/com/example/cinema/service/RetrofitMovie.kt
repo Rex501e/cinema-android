@@ -11,33 +11,31 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
 
-object RetrofitClient {
+object RetrofitMovie {
     private var retrofit: Retrofit? = null
-    private val intercepteur = HttpLoggingInterceptor()
-        .setLevel(HttpLoggingInterceptor.Level.BASIC)
+    private val intercepteur = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC)
 
-    fun getClientRetrofit(c: Context? ): Retrofit? {
-        val uneSession = SessionManager(c!!)
-        val unToken = uneSession.fetchAuthToken()
+    fun getMovieRetrofit(c: Context? ): Retrofit? {
+        val session = SessionManager(c!!)
+        val token = session.fetchAuthToken()
         if (retrofit == null) {
-            // si le code est zéro, on n'envoie pas de token  -> login
              val httpClient = OkHttpClient.Builder()
                     .addInterceptor(object : Interceptor {
                         @Throws(IOException::class)
                         override fun intercept(chain: Interceptor.Chain): Response {
                             val newRequest = chain.request().newBuilder()
-                                .addHeader("Authorization", "Bearer $unToken")
+                                .addHeader("Authorization", "Bearer $token")
                                 .build()
                             return chain.proceed(newRequest)
                         }
                     })
                     .build()
 
-            // on définit l'entête de l'appel
             val gson = GsonBuilder()
                 .setDateFormat("yyyy-MM-dd'T'HH:mm:ss")
                 .setLenient()
                 .create()
+
             retrofit = Retrofit.Builder()
                 .client(httpClient)
                 .baseUrl(MyConstants.url)

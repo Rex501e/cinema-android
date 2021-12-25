@@ -1,25 +1,21 @@
-package com.example.cinema.meserreurs;
+package com.example.cinema.exception;
 
-/**
- * Created by christian on 15/12/13.
- */
-public class MonException extends Exception implements java.io.Serializable {
-    /**
-     *
-     */
+
+public class Exception extends java.lang.Exception implements java.io.Serializable {
+
     private static final long serialVersionUID = 1L;
     private String message;
     private String type;
 
-    public MonException() {
+    public Exception() {
     }
 
-    public MonException(String libelle, String type) {
+    public Exception(String libelle, String type) {
         this.message = libelle;
         this.type = type;
     }
 
-    public MonException(String libelle) {
+    public Exception(String libelle) {
         this.message = libelle;
 
     }

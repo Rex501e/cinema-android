@@ -1,4 +1,4 @@
-package com.example.cinema.presentation;
+package com.example.cinema.ui;
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

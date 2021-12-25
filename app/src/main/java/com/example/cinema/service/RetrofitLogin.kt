@@ -1,6 +1,5 @@
 package com.example.cinema.service
 
-
 import android.content.Context
 import com.example.cinema.config.MyConstants
 import com.google.gson.GsonBuilder
@@ -12,22 +11,20 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
 
-
 val intercepteur : HttpLoggingInterceptor = HttpLoggingInterceptor().
 apply {
     this.level = HttpLoggingInterceptor.Level.BASIC
 }
 
-object RetrofitConnexion {
+object RetrofitLogin {
     private var retrofit: Retrofit? = null
-    private val intercepteur = HttpLoggingInterceptor()
-        .setLevel(HttpLoggingInterceptor.Level.BASIC)
+    private val intercepteur = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC)
 
-    fun getClientRetrofit(c: Context? ): Retrofit? {
-        val uneSession = SessionManager(c!!)
-        val unToken = uneSession.fetchAuthToken()
+    fun getTokenRetrofit(c: Context? ): Retrofit? {
+        val session = SessionManager(c!!)
+        val token = session.fetchAuthToken()
+
         if (retrofit == null) {
-            // si le code est zéro, on n'envoie pas de token  -> login
             val httpClient = OkHttpClient.Builder()
                 .addInterceptor(object : Interceptor {
                     @Throws(IOException::class)
@@ -39,11 +36,12 @@ object RetrofitConnexion {
                 })
                 .build()
 
-            // on définit l'entête de l'appel
             val gson = GsonBuilder()
                 .setDateFormat("yyyy-MM-dd'T'HH:mm:ss")
                 .setLenient()
                 .create()
+
+
             retrofit = Retrofit.Builder()
                 .client(httpClient)
                 .baseUrl(MyConstants.url)
