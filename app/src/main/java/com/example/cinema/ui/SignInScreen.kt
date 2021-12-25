@@ -1,4 +1,4 @@
-package com.example.cinema.ui.signin
+package com.example.cinema.ui
 
 import android.content.Context
 import android.content.Intent
@@ -23,16 +23,14 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.cinema.MainActivity
 import com.example.cinema.domain.Login
 import com.example.cinema.exception.Exception
 import com.example.cinema.service.RetrofitLogin
 import com.example.cinema.service.ServiceLogin
-import com.example.cinema.ui.MovieActivity
+import com.example.cinema.service.SessionManager
 import com.example.cinema.validator.PasswordState
 import com.example.cinema.validator.UsernameState
 import com.google.gson.Gson
-import com.google.gson.JsonSyntaxException
 import org.json.JSONException
 import org.json.JSONObject
 import retrofit2.Call
@@ -71,48 +69,42 @@ fun SignInScreen() {
     }
 }
 
+@Throws(Exception::class)
 fun signin(username: String, password: String, context: Context) {
     val login= Login(username, password)
-    controleUtilisateur(login, context)
-}
-
-@Throws(Exception::class)
-fun controleUtilisateur(unLogin: Login, context: Context) {
     val retrofit: Retrofit? = RetrofitLogin.getTokenRetrofit(context)
     val connexionService = retrofit!!.create(ServiceLogin::class.java)
+
     try {
-        connexionService.getConnexion(unLogin).enqueue(object : Callback<Any> {
-                override fun onResponse(call: Call<Any>, uneReponse: Response<Any>) {
-                    if (uneReponse.isSuccessful) {
-                        if (uneReponse.body() != null) {
-                            val unObjet: Any? = uneReponse.body()
-                            val jsonString = Gson().toJson(unObjet)
-                            var json: JSONObject? = null
-                            try {
-                                json = JSONObject(jsonString)
-                                val token = json.getString("token")
-                                Toast.makeText(context, "Authentification réussie !!!", Toast.LENGTH_LONG).show()
-                                val intent = Intent(context, MovieActivity::class.java)
-                                intent.putExtra("token", token)
-                                context.startActivity(intent)
-                            } catch (e: JSONException) {
-                                Exception(
-                                    e.message,
-                                    "Erreur Appel WS Connexion"
-                                )
-                            }
-                        } else {
-                            Toast.makeText(context,"Erreur d'appel!", Toast.LENGTH_LONG ) .show()
+        connexionService.getConnexion(login).enqueue(object : Callback<Any> {
+            override fun onResponse(call: Call<Any>, uneReponse: Response<Any>) {
+                if (uneReponse.isSuccessful) {
+                    if (uneReponse.body() != null) {
+                        val unObjet: Any? = uneReponse.body()
+                        val jsonString = Gson().toJson(unObjet)
+                        var json: JSONObject? = null
+                        try {
+                            json = JSONObject(jsonString)
+                            val token = json.getString("token")
+                            Toast.makeText(context, "Authentification réussie !!!", Toast.LENGTH_LONG).show()
+                            SessionManager(context).saveAuthToken(token)
+                            val intent = Intent(context, MovieActivity::class.java)
+                            context.startActivity(intent)
+                        } catch (e: JSONException) {
+                            Exception(e.message, "Erreur Appel WS Connexion")
                         }
                     } else {
-                        Toast.makeText(context, "Utilisateur non trouvé", Toast.LENGTH_LONG).show();
-                        Log.d("CONNEXION", "onResponse =>>> code = " + uneReponse.code())
+                        Toast.makeText(context,"Erreur d'appel!", Toast.LENGTH_LONG ) .show()
                     }
+                } else {
+                    Toast.makeText(context, "Utilisateur non trouvé", Toast.LENGTH_LONG).show();
+                    Log.d("CONNEXION", "onResponse =>>> code = " + uneReponse.code())
                 }
-                override fun onFailure(call: Call<Any?>, t: Throwable ) {
-                    Toast.makeText(context,"Erreur de connexion", Toast.LENGTH_LONG ) .show()
-                }
-            })
+            }
+            override fun onFailure(call: Call<Any?>, t: Throwable ) {
+                Toast.makeText(context,"Erreur de connexion", Toast.LENGTH_LONG ) .show()
+            }
+        })
     } catch (e: Exception) {
         Exception(
             e.message,
