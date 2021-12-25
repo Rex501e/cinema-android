@@ -10,4 +10,7 @@ class Movie {
     var montantRecette = 0
     var noRea = 0
     var codeCat: String? = null
+    val urlImage: String? = null
+    val realisateur: Realisateur? = null
+    val categorie: Categorie? = null
 }

@@ -10,15 +10,18 @@ import androidx.activity.compose.setContent
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
@@ -28,6 +31,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberImagePainter
 import com.example.cinema.data.MovieViewModel
 import com.example.cinema.domain.Movie
 import com.example.cinema.exception.Exception
@@ -133,7 +137,7 @@ fun Greeting(movie: Movie) {
     var expanded by remember { mutableStateOf(false) }
 
     val extraPadding by animateDpAsState(
-        if (expanded) 48.dp else 0.dp,
+        if (expanded) 5.dp else 0.dp,
         animationSpec = spring(
             dampingRatio = Spring.DampingRatioMediumBouncy,
             stiffness = Spring.StiffnessLow
@@ -142,31 +146,95 @@ fun Greeting(movie: Movie) {
 
     Surface(
         color = Color.Gray,
-        modifier = Modifier.padding(vertical = 4.dp, horizontal = 8.dp)
+        modifier = Modifier.padding(vertical = 5.dp, horizontal = 8.dp)
     ) {
-        Row(modifier = Modifier.padding(24.dp)) {
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(bottom = extraPadding.coerceAtLeast(0.dp))
-            ) {
-                Text(text = movie.dateSortie.toString(), color = Color.White, fontSize = 13.sp)
-                Text(
-                    text = movie.titre!!,
-                    style = MaterialTheme.typography.h4.copy(
-                        fontWeight = FontWeight.ExtraBold
-                    ),
-                    color = Color.White,
-                    fontSize = 25.sp
-                )
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ){
+            Row(modifier = Modifier.padding(15.dp)) {
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(bottom = extraPadding.coerceAtLeast(0.dp))
+                ) {
+                    Text(
+                        text = movie.titre!!,
+                        style = MaterialTheme.typography.h4.copy(
+                            fontWeight = FontWeight.ExtraBold
+                        ),
+                        color = Color.White,
+                        fontSize = 26.sp
+                    )
+                }
+                OutlinedButton(
+                    onClick = { expanded = !expanded },
+                    colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red),
+                ) {
+                    Text(if (expanded) "Voir moins" else "Voir plus", color = Color.White)
+                }
             }
-            OutlinedButton(
-                onClick = { expanded = !expanded },
-                colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red),
-            ) {
-                Text(if (expanded) "Voir moins" else "Voir plus", color = Color.White)
+            if (expanded) {
+                MovieDetail(movie);
             }
         }
     }
 }
 
+@Composable
+fun MovieDetail(movie: Movie){
+    val url = movie.urlImage
+        ?: "https://media.istockphoto.com/vectors/no-image-available-sign-vector-id922962354?k=20&m=922962354&s=612x612&w=0&h=f-9tPXlFXtz9vg_-WonCXKCdBuPUevOBkp3DQ-i0xqo="
+
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(15.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ){
+        Box(){
+            Image(
+                painter = rememberImagePainter(url),
+                contentDescription = null,
+                modifier = Modifier.size(150.dp)
+            )
+        }
+        Column {
+            Text(
+                text = "ID: " + movie.noFilm,
+                color = Color.White,
+                fontSize = 15.sp
+            )
+            Text(
+                text = "Durée: " + movie.duree + " min",
+                color = Color.White,
+                fontSize = 15.sp
+            )
+            Text(
+                text = "Date de sortie: " + movie.dateSortie.toString(),
+                color = Color.White,
+                fontSize = 15.sp
+            )
+            Text(
+                text = "Catégorie: " + movie.categorie?.libelleCat,
+                color = Color.White,
+                fontSize = 15.sp
+            )
+            Text(
+                text = "Réalisateur: " + movie.realisateur?.nomRea+" "+movie.realisateur?.prenRea,
+                color = Color.White,
+                fontSize = 15.sp
+            )
+            Text(
+                text = "Budget: " + movie.budget+ " €",
+                color = Color.White,
+                fontSize = 15.sp
+            )
+            Text(
+                text = "Montant recette: " + movie.montantRecette + " €",
+                color = Color.White,
+                fontSize = 15.sp
+            )
+        }
+    }
+}
