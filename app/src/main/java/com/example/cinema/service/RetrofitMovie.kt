@@ -32,7 +32,7 @@ object RetrofitMovie {
                     .build()
 
             val gson = GsonBuilder()
-                .setDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+                .setDateFormat("dd/mm/yyyy")
                 .setLenient()
                 .create()
 
