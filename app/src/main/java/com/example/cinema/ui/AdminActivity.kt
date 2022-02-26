@@ -1,6 +1,7 @@
 package com.example.cinema.ui
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -32,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.TextFieldValue
 import com.example.cinema.service.RetrofitToken
+import com.example.cinema.validator.UsernameState
 import retrofit2.Retrofit
 
 class AdminActivity : ComponentActivity() {
@@ -84,13 +86,29 @@ fun FormMovie(cvm: CategoryViewModel, rvm: RealisatorViewModel, movie: Movie, cr
                 .padding(10.dp),
             verticalArrangement = Arrangement.Center,
         ){
-            StringField(movie.titre, "Titre")
+            var titreState by mutableStateOf(movie.titre)
+            StringField(titreState, "Titre"){
+                titreState = it
+                movie.titre = it
+            }
             Spacer(Modifier.size(16.dp))
-            StringField(movie.duree, "Durée (en min)")
+            var dureeState by mutableStateOf(movie.duree)
+            StringField(dureeState, "Durée (en min)"){
+                dureeState = it
+                movie.duree = it
+            }
             Spacer(Modifier.size(16.dp))
-            StringField(movie.budget, "Budget")
+            var budgetState by mutableStateOf(movie.budget)
+            StringField(budgetState, "Budget"){
+                budgetState = it
+                movie.budget = it
+            }
             Spacer(Modifier.size(16.dp))
-            StringField(movie.montantRecette, "Revenue")
+            var amountState by mutableStateOf(movie.montantRecette)
+            StringField(amountState, "Revenue"){
+                amountState = it
+                movie.montantRecette = it
+            }
             Spacer(Modifier.size(16.dp))
             val realisator = if(movie.noRea != "") movie.noRea else null
             RealisatorField(rvm, realisator)
@@ -98,9 +116,17 @@ fun FormMovie(cvm: CategoryViewModel, rvm: RealisatorViewModel, movie: Movie, cr
             val category = if(movie.codeCat != "") movie.codeCat else null
             CategoryField(cvm, category)
             Spacer(Modifier.size(16.dp))
-            StringField(movie.urlImage, "Url image")
+            var urlImageState by mutableStateOf(movie.urlImage)
+            StringField(urlImageState, "Url image"){
+                urlImageState = it
+                movie.urlImage = it
+            }
             Spacer(Modifier.size(16.dp))
-            StringField(movie.urlTrailer, "Url trailer")
+            var urlTrailerState by mutableStateOf(movie.urlTrailer)
+            StringField(urlTrailerState, "Url trailer"){
+                urlTrailerState = it
+                movie.urlTrailer = it
+            }
             Spacer(Modifier.size(16.dp))
             ValidatorButton(strCreated,
                 enabled = true
@@ -126,6 +152,8 @@ fun createMovie(movie: Movie, context: Context) {
             override fun onResponse(call: Call<Movie>, response: Response<Movie>) {
                 if (response.isSuccessful) {
                     if (response.body() != null) {
+                        val intent = Intent(context, MovieActivity::class.java)
+                        context.startActivity(intent)
                         Toast.makeText(context, "Film ajouté avec succé", Toast.LENGTH_LONG).show()
                     } else {
                         Toast.makeText(context,"Erreur d'appel!", Toast.LENGTH_LONG ) .show()
@@ -154,6 +182,8 @@ fun updateMovie(movie: Movie, context: Context) {
             override fun onResponse(call: Call<Movie>, response: Response<Movie>) {
                 if (response.isSuccessful) {
                     if (response.body() != null) {
+                        val intent = Intent(context, MovieActivity::class.java)
+                        context.startActivity(intent)
                         Toast.makeText(context, "Film modifié avec succé", Toast.LENGTH_LONG).show()
                     } else {
                         Toast.makeText(context,"Erreur d'appel!", Toast.LENGTH_LONG ) .show()
@@ -173,12 +203,10 @@ fun updateMovie(movie: Movie, context: Context) {
 }
 
 @Composable
-fun StringField(strValue: String, placeHolder: String){
-    val textState = remember { mutableStateOf(TextFieldValue(strValue)) }
-
+fun StringField(strValue: String, placeHolder: String, onChanged: (String) -> Unit){
     TextField(
-        value = textState.value,
-        onValueChange = { textState.value = it },
+        value = strValue,
+        onValueChange = { value -> onChanged(value) },
         modifier = Modifier.fillMaxWidth(),
         label = { Text(text = placeHolder, color = Color.Gray) },
         colors = TextFieldDefaults.textFieldColors(textColor = Color.White),
@@ -203,7 +231,7 @@ fun RealisatorField(rvm: RealisatorViewModel, realisator: String?){
         Column() {
             OutlinedTextField(
                 value = current.nomRea + " "+ current.prenRea,
-                onValueChange = { },
+                onValueChange = {  },
                 modifier = Modifier.fillMaxWidth().clickable{ expanded = !expanded },
                 label = { current.nomRea + " "+ current.prenRea },
                 colors = TextFieldDefaults.textFieldColors(textColor = Color.White),
