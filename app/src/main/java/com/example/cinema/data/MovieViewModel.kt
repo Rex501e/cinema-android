@@ -1,8 +1,6 @@
 package com.example.cinema.data
 
 import android.content.Context
-import android.util.Log
-import android.widget.Toast
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -10,7 +8,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cinema.domain.Movie
-import com.example.cinema.service.RetrofitMovie
+import com.example.cinema.service.RetrofitToken
 import com.example.cinema.service.ServiceMovie
 import kotlinx.coroutines.launch
 import retrofit2.Call
@@ -25,7 +23,7 @@ class MovieViewModel: ViewModel() {
     get() = _movieList
 
     fun getMovieList(context: Context) {
-        val retrofit: Retrofit? = RetrofitMovie.getMovieRetrofit(context)
+        val retrofit: Retrofit? = RetrofitToken.getRetrofit(context)
         val serviceMovie: ServiceMovie = retrofit!!.create(ServiceMovie::class.java)
         val call: Call<List<Movie>> = serviceMovie.getMovies()
 

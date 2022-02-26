@@ -1,7 +1,6 @@
 package com.example.cinema.ui
 
 import android.content.Context
-import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -17,26 +16,23 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.cinema.data.CategoryViewModel
 import com.example.cinema.data.RealisatorViewModel
 import com.example.cinema.domain.Movie
 import com.example.cinema.exception.Exception
-import com.example.cinema.service.RetrofitLogin
 import com.example.cinema.service.ServiceMovie
 import com.example.cinema.ui.theme.CinemaTheme
-import com.example.cinema.validator.PasswordState
-import com.example.cinema.validator.UsernameState
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
 
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import com.example.cinema.service.RetrofitMovie
+import androidx.compose.ui.text.input.TextFieldValue
+import com.example.cinema.service.RetrofitToken
+import retrofit2.Retrofit
 
 class AdminActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -88,21 +84,13 @@ fun FormMovie(cvm: CategoryViewModel, rvm: RealisatorViewModel, movie: Movie, cr
                 .padding(10.dp),
             verticalArrangement = Arrangement.Center,
         ){
-            StringField(movie.titre, "Titre") {
-                movie.titre = it
-            }
+            StringField(movie.titre, "Titre")
             Spacer(Modifier.size(16.dp))
-            StringField(movie.duree, "Durée (en min)") {
-                movie.duree = it
-            }
+            StringField(movie.duree, "Durée (en min)")
             Spacer(Modifier.size(16.dp))
-            StringField(movie.budget, "Budget") {
-                movie.budget = it
-            }
+            StringField(movie.budget, "Budget")
             Spacer(Modifier.size(16.dp))
-            StringField(movie.montantRecette, "Revenue") {
-                movie.montantRecette = it
-            }
+            StringField(movie.montantRecette, "Revenue")
             Spacer(Modifier.size(16.dp))
             val realisator = if(movie.noRea != "") movie.noRea else null
             RealisatorField(rvm, realisator)
@@ -110,13 +98,9 @@ fun FormMovie(cvm: CategoryViewModel, rvm: RealisatorViewModel, movie: Movie, cr
             val category = if(movie.codeCat != "") movie.codeCat else null
             CategoryField(cvm, category)
             Spacer(Modifier.size(16.dp))
-            StringField(movie.urlImage, "Url image") {
-                movie.urlImage = it
-            }
+            StringField(movie.urlImage, "Url image")
             Spacer(Modifier.size(16.dp))
-            StringField(movie.urlTrailer, "Url trailer") {
-                movie.urlTrailer = it
-            }
+            StringField(movie.urlTrailer, "Url trailer")
             Spacer(Modifier.size(16.dp))
             ValidatorButton(strCreated,
                 enabled = true
@@ -134,7 +118,7 @@ fun FormMovie(cvm: CategoryViewModel, rvm: RealisatorViewModel, movie: Movie, cr
 
 @Throws(Exception::class)
 fun createMovie(movie: Movie, context: Context) {
-    val retrofit: Retrofit? = RetrofitMovie.getMovieRetrofit(context)
+    val retrofit: Retrofit? = RetrofitToken.getRetrofit(context)
     val movieService = retrofit!!.create(ServiceMovie::class.java)
 
     try {
@@ -162,7 +146,7 @@ fun createMovie(movie: Movie, context: Context) {
 
 @Throws(Exception::class)
 fun updateMovie(movie: Movie, context: Context) {
-    val retrofit: Retrofit? = RetrofitMovie.getMovieRetrofit(context)
+    val retrofit: Retrofit? = RetrofitToken.getRetrofit(context)
     val movieService = retrofit!!.create(ServiceMovie::class.java)
 
     try {
@@ -189,10 +173,12 @@ fun updateMovie(movie: Movie, context: Context) {
 }
 
 @Composable
-fun StringField(strValue: String, placeHolder: String, onStringChanged: (String) -> Unit){
+fun StringField(strValue: String, placeHolder: String){
+    val textState = remember { mutableStateOf(TextFieldValue(strValue)) }
+
     TextField(
-        value = strValue,
-        onValueChange = { value -> onStringChanged(value) },
+        value = textState.value,
+        onValueChange = { textState.value = it },
         modifier = Modifier.fillMaxWidth(),
         label = { Text(text = placeHolder, color = Color.Gray) },
         colors = TextFieldDefaults.textFieldColors(textColor = Color.White),

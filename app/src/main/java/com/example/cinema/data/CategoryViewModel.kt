@@ -8,7 +8,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cinema.domain.Category;
-import com.example.cinema.service.RetrofitMovie
+import com.example.cinema.service.RetrofitToken
 import com.example.cinema.service.ServiceCategory
 import kotlinx.coroutines.launch
 import retrofit2.Call
@@ -23,7 +23,7 @@ class CategoryViewModel: ViewModel() {
     get() = _categoryList
 
     fun getCategoryList(context: Context) {
-        val retrofit: Retrofit? = RetrofitMovie.getMovieRetrofit(context)
+        val retrofit: Retrofit? = RetrofitToken.getRetrofit(context)
         val serviceCategory: ServiceCategory = retrofit!!.create(ServiceCategory::class.java)
         val call: Call<List<Category>> = serviceCategory.getCategories()
 

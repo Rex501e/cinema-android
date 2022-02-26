@@ -11,11 +11,11 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
 
-object RetrofitMovie {
+object RetrofitToken {
     private var retrofit: Retrofit? = null
     private val intercepteur = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BASIC)
 
-    fun getMovieRetrofit(c: Context? ): Retrofit? {
+    fun getRetrofit(c: Context? ): Retrofit? {
         val session = SessionManager(c!!)
         val token = session.fetchAuthToken()
         if (retrofit == null) {

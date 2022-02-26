@@ -8,7 +8,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.cinema.domain.Realisator;
-import com.example.cinema.service.RetrofitMovie
+import com.example.cinema.service.RetrofitToken
 import com.example.cinema.service.ServiceRealisator
 import kotlinx.coroutines.launch
 import retrofit2.Call
@@ -23,7 +23,7 @@ class RealisatorViewModel: ViewModel() {
         get() = _realisatorList
 
     fun getRealisatorList(context: Context) {
-        val retrofit: Retrofit? = RetrofitMovie.getMovieRetrofit(context)
+        val retrofit: Retrofit? = RetrofitToken.getRetrofit(context)
         val serviceRealisator: ServiceRealisator = retrofit!!.create(ServiceRealisator::class.java)
         val call: Call<List<Realisator>> = serviceRealisator.getRealisators()
 
