@@ -1,6 +1,8 @@
 package com.example.cinema.domain
 
-class Realisator {
+import java.io.Serializable
+
+class Realisator : Serializable {
     val noRea: String? = null
     val nomRea: String? = null
     val prenRea: String? = null

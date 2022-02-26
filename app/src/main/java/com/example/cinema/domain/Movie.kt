@@ -4,7 +4,7 @@ import  java.io.Serializable
 
 
 class Movie : Serializable {
-    var noFilm: String = "-1"
+    var noFilm: String? = null
     var titre: String = ""
     var duree: String = ""
     var dateSortie: String = ""
@@ -13,10 +13,9 @@ class Movie : Serializable {
     var noRea: String = ""
     var codeCat: String = ""
     var urlImage: String = ""
-    var urlTrailer: String = ""
+    var videotrailer: String = ""
+    var titleimage: String = ""
 
-    @Transient
     val realisateur: Realisator? = null
-    @Transient
     val categorie: Category? = null
 }

@@ -98,6 +98,12 @@ fun FormMovie(cvm: CategoryViewModel, rvm: RealisatorViewModel, movie: Movie, cr
                 movie.duree = it
             }
             Spacer(Modifier.size(16.dp))
+            var dateState by mutableStateOf(movie.dateSortie)
+            StringField(dateState, "Date de sortie"){
+                dateState = it
+                movie.dateSortie = it
+            }
+            Spacer(Modifier.size(16.dp))
             var budgetState by mutableStateOf(movie.budget)
             StringField(budgetState, "Budget"){
                 budgetState = it
@@ -122,10 +128,10 @@ fun FormMovie(cvm: CategoryViewModel, rvm: RealisatorViewModel, movie: Movie, cr
                 movie.urlImage = it
             }
             Spacer(Modifier.size(16.dp))
-            var urlTrailerState by mutableStateOf(movie.urlTrailer)
+            var urlTrailerState by mutableStateOf(movie.videotrailer)
             StringField(urlTrailerState, "Url trailer"){
                 urlTrailerState = it
-                movie.urlTrailer = it
+                movie.videotrailer = it
             }
             Spacer(Modifier.size(16.dp))
             ValidatorButton(strCreated,
@@ -178,7 +184,7 @@ fun updateMovie(movie: Movie, context: Context) {
     val movieService = retrofit!!.create(ServiceMovie::class.java)
 
     try {
-        movieService.editMovie(movie.noFilm, movie).enqueue(object : Callback<Movie> {
+        movieService.editMovie(movie.noFilm ?: "-1", movie).enqueue(object : Callback<Movie> {
             override fun onResponse(call: Call<Movie>, response: Response<Movie>) {
                 if (response.isSuccessful) {
                     if (response.body() != null) {
