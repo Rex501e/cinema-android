@@ -111,10 +111,10 @@ fun FormMovie(cvm: CategoryViewModel, rvm: RealisatorViewModel, movie: Movie, cr
             }
             Spacer(Modifier.size(16.dp))
             val realisator = if(movie.noRea != "") movie.noRea else null
-            RealisatorField(rvm, realisator)
+            RealisatorField(rvm, realisator, movie)
             Spacer(Modifier.size(16.dp))
             val category = if(movie.codeCat != "") movie.codeCat else null
-            CategoryField(cvm, category)
+            CategoryField(cvm, category, movie)
             Spacer(Modifier.size(16.dp))
             var urlImageState by mutableStateOf(movie.urlImage)
             StringField(urlImageState, "Url image"){
@@ -214,13 +214,17 @@ fun StringField(strValue: String, placeHolder: String, onChanged: (String) -> Un
 }
 
 @Composable
-fun RealisatorField(rvm: RealisatorViewModel, realisator: String?){
+fun RealisatorField(rvm: RealisatorViewModel, realisator: String?, movie: Movie){
     val realisators = rvm.realisatorList
 
     if (rvm.realisatorList.isNotEmpty()) {
-        val default = realisator ?: realisators[0].noRea
         var expanded by remember { mutableStateOf(false) }
+        val default = realisator ?: realisators[0].noRea
         var selectedText by remember { mutableStateOf(default) }
+
+        if (realisator == null && default != null){
+            movie.noRea = default
+        }
 
         val icon = if (expanded)
             Icons.Filled.KeyboardArrowUp
@@ -231,7 +235,7 @@ fun RealisatorField(rvm: RealisatorViewModel, realisator: String?){
         Column() {
             OutlinedTextField(
                 value = current.nomRea + " "+ current.prenRea,
-                onValueChange = {  },
+                onValueChange = { },
                 modifier = Modifier.fillMaxWidth().clickable{ expanded = !expanded },
                 label = { current.nomRea + " "+ current.prenRea },
                 colors = TextFieldDefaults.textFieldColors(textColor = Color.White),
@@ -254,6 +258,7 @@ fun RealisatorField(rvm: RealisatorViewModel, realisator: String?){
             ) {
                 realisators.forEach{ item ->
                     DropdownMenuItem(onClick = {
+                        movie.noRea = item.noRea.toString()
                         selectedText = item.noRea
                         expanded = false
                     }) {
@@ -266,13 +271,17 @@ fun RealisatorField(rvm: RealisatorViewModel, realisator: String?){
 }
 
 @Composable
-fun CategoryField(cvm: CategoryViewModel, category: String?){
+fun CategoryField(cvm: CategoryViewModel, category: String?, movie: Movie){
     val categories = cvm.categoryList
 
     if (cvm.categoryList.isNotEmpty()) {
         val default = category ?: categories[0].codeCat
         var expanded by remember { mutableStateOf(false) }
         var selectedText by remember { mutableStateOf(default) }
+
+        if (category == null && default != null){
+            movie.codeCat = default
+        }
 
         val icon = if (expanded)
             Icons.Filled.KeyboardArrowUp
@@ -306,6 +315,7 @@ fun CategoryField(cvm: CategoryViewModel, category: String?){
             ) {
                 categories.forEach{ item ->
                     DropdownMenuItem(onClick = {
+                        movie.codeCat= item.codeCat.toString()
                         selectedText = item.codeCat
                         expanded = false
                     }) {
