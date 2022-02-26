@@ -38,7 +38,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 
-//@Preview(showBackground = true, widthDp = 320, uiMode = UI_MODE_NIGHT_YES,)
+// @Preview(showBackground = true, widthDp = 320, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun SignInScreen() {
     val context = LocalContext.current
@@ -63,7 +63,7 @@ fun SignInScreen() {
             passwordState.validate()
         }
         Spacer(Modifier.size(16.dp))
-        SignInBtn(enabled = usernameState.isValid() && passwordState.isValid()) {
+        ValidatorButton("Connexion", enabled = usernameState.isValid() && passwordState.isValid()) {
             signin(usernameState.text, passwordState.text, context)
         }
     }
@@ -168,7 +168,7 @@ fun Password(password: String, error: String?, onPasswordChanged: (String) -> Un
 }
 
 @Composable
-fun SignInBtn(enabled: Boolean, onClick: () -> Unit){
+fun ValidatorButton(text: String, enabled: Boolean, onClick: () -> Unit){
     Button(
         onClick = { onClick() },
         modifier = Modifier.fillMaxWidth(),
@@ -176,7 +176,7 @@ fun SignInBtn(enabled: Boolean, onClick: () -> Unit){
         colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red),
         enabled = enabled
     ) {
-        Text(text = "Connexion", color = Color.White)
+        Text(text = text, color = Color.White)
     }
 }
 

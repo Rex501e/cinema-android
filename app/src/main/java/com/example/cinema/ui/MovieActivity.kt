@@ -1,10 +1,8 @@
 package com.example.cinema.ui;
 
 import android.content.Context
-import android.content.res.Configuration.UI_MODE_NIGHT_YES
+import android.content.Intent
 import android.os.Bundle
-import android.util.Log
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.core.Spring
@@ -14,31 +12,28 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat.startActivity
 import coil.compose.rememberImagePainter
 import com.example.cinema.data.MovieViewModel
 import com.example.cinema.domain.Movie
-import com.example.cinema.exception.Exception
-import com.example.cinema.service.RetrofitMovie
-import com.example.cinema.service.ServiceMovie
 import com.example.cinema.ui.theme.CinemaTheme
-import retrofit2.*
+
 
 class MovieActivity : ComponentActivity() {
 
@@ -65,7 +60,7 @@ fun Greetings(vm: MovieViewModel) {
 
     Scaffold(
         topBar = {
-            topBar()
+            topBar(context)
         }
     ) {
         LazyColumn(modifier = Modifier.padding(vertical = 4.dp)) {
@@ -90,14 +85,14 @@ fun Greetings(vm: MovieViewModel) {
                 }
             }
             items(items = vm.movieList) { movie ->
-                Greeting(movie = movie)
+                Greeting(movie = movie, context)
             }
         }
     }
 }
 
 @Composable
-fun topBar(){
+fun topBar(context: Context) {
     TopAppBar(
         title = {
             Text(
@@ -110,7 +105,18 @@ fun topBar(){
                     }
                 }, fontSize = 30.sp
             )
-        }
+        },
+        actions = {
+            IconButton(onClick = {
+                val intent = Intent(context, AdminActivity::class.java)
+                context.startActivity(intent)
+            }) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "add",
+                )
+            }
+        },
     )
 }
 
@@ -133,7 +139,7 @@ fun SearchTxtField(onSearchChanged: (String) -> Unit) {
 }
 
 @Composable
-fun Greeting(movie: Movie) {
+fun Greeting(movie: Movie, context: Context) {
     var expanded by remember { mutableStateOf(false) }
 
     val extraPadding by animateDpAsState(
@@ -176,14 +182,14 @@ fun Greeting(movie: Movie) {
                 }
             }
             if (expanded) {
-                MovieDetail(movie);
+                MovieDetail(movie, context);
             }
         }
     }
 }
 
 @Composable
-fun MovieDetail(movie: Movie){
+fun MovieDetail(movie: Movie, context: Context){
     val url = movie.urlImage
         ?: "https://media.istockphoto.com/vectors/no-image-available-sign-vector-id922962354?k=20&m=922962354&s=612x612&w=0&h=f-9tPXlFXtz9vg_-WonCXKCdBuPUevOBkp3DQ-i0xqo="
 
@@ -237,4 +243,29 @@ fun MovieDetail(movie: Movie){
             )
         }
     }
+
+    Column (modifier = Modifier.fillMaxWidth().padding(15.dp)){
+        Button(
+            onClick = {
+                val intent = Intent(context, AdminActivity::class.java)
+                intent.putExtra("movie", movie);
+                context.startActivity(intent)
+            },
+            modifier = Modifier.fillMaxWidth(),
+            contentPadding = PaddingValues(16.dp),
+            colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red),
+        ) {
+            Text(text = "Modifier", color = Color.White)
+        }
+        Spacer(Modifier.size(10.dp))
+        Button(
+            onClick = {  },
+            modifier = Modifier.fillMaxWidth(),
+            contentPadding = PaddingValues(16.dp),
+            colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red),
+        ) {
+            Text(text = "Supprimer", color = Color.White)
+        }
+    }
+
 }

@@ -1,16 +1,22 @@
 package com.example.cinema.domain
 
+import  java.io.Serializable
 
-class Movie {
-    var noFilm = 0
-    var titre: String? = null
-    var duree = 0
+
+class Movie : Serializable {
+    var noFilm: String? = ""
+    var titre: String? = ""
+    var duree: String? = ""
     var dateSortie: String? = null
-    var budget = 0
-    var montantRecette = 0
-    var noRea = 0
+    var budget: String? = ""
+    var montantRecette: String? = ""
+    var noRea: String? = ""
     var codeCat: String? = null
     val urlImage: String? = null
-    val realisateur: Realisateur? = null
-    val categorie: Categorie? = null
+    val urlTrailer: String? = null
+
+    @Transient
+    val realisateur: Realisator? = null
+    @Transient
+    val categorie: Category? = null
 }

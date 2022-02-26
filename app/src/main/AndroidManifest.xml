@@ -16,6 +16,9 @@
         android:usesCleartextTraffic="true"
         >
         <activity
+            android:name=".ui.AdminActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.MovieActivity"
             android:exported="false" />
         <activity

@@ -1,7 +1,7 @@
 package com.example.cinema.domain
 
-class Realisateur {
-    val noRea = 0
+class Realisator {
+    val noRea: String? = null
     val nomRea: String? = null
     val prenRea: String? = null
 }
