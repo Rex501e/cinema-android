@@ -190,7 +190,7 @@ fun updateMovie(movie: Movie, context: Context) {
                     if (response.body() != null) {
                         val intent = Intent(context, MovieActivity::class.java)
                         context.startActivity(intent)
-                        Toast.makeText(context, "Film modifié avec succé", Toast.LENGTH_LONG).show()
+                        Toast.makeText(context, "Film modifié avec succès", Toast.LENGTH_LONG).show()
                     } else {
                         Toast.makeText(context,"Erreur d'appel!", Toast.LENGTH_LONG ) .show()
                     }

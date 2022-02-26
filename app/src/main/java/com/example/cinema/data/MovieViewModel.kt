@@ -22,10 +22,15 @@ class MovieViewModel: ViewModel() {
     val movieList: List<Movie>
     get() = _movieList
 
-    fun getMovieList(context: Context) {
+    fun getMovieList(context: Context, search: String = "") {
         val retrofit: Retrofit? = RetrofitToken.getRetrofit(context)
         val serviceMovie: ServiceMovie = retrofit!!.create(ServiceMovie::class.java)
-        val call: Call<List<Movie>> = serviceMovie.getMovies()
+
+        val call: Call<List<Movie>> = if (search === "") {
+            serviceMovie.getMovies()
+        } else {
+            serviceMovie.searchMovies(search)
+        }
 
         viewModelScope.launch {
             try {

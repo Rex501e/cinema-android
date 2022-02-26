@@ -28,11 +28,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat.startActivity
 import coil.compose.rememberImagePainter
 import com.example.cinema.data.MovieViewModel
 import com.example.cinema.domain.Movie
 import com.example.cinema.ui.theme.CinemaTheme
+import com.example.cinema.validator.SearchState
 
 
 class MovieActivity : ComponentActivity() {
@@ -79,7 +79,11 @@ fun Greetings(vm: MovieViewModel) {
                         Column(
                             modifier = Modifier.weight(1f)
                         ) {
-                            SearchTxtField() {}
+                            val searchState = remember { SearchState() }
+                            SearchTxtField(searchState.text, searchState.error, context, vm) {
+                                searchState.text = it
+                                searchState.validate()
+                            }
                         }
                     }
                 }
@@ -121,21 +125,28 @@ fun topBar(context: Context) {
 }
 
 @Composable
-fun SearchTxtField(onSearchChanged: (String) -> Unit) {
-    OutlinedTextField(
-        value = "",
+fun SearchTxtField(search: String, error: String?, context: Context, vm: MovieViewModel, onSearchChanged: (String) -> Unit) {
+    TextField(
+        value = search,
         onValueChange = { value -> onSearchChanged(value) },
         modifier = Modifier.fillMaxWidth(),
         label = { Text(text = "Rechercher", color = Color.Gray) },
         colors = TextFieldDefaults.textFieldColors(textColor = Color.White),
         trailingIcon = {
-            Icon(
-                imageVector = Icons.Default.Search,
-                contentDescription = "search",
-                tint = Color.Red
-            )
+            IconButton(onClick = {
+                vm.getMovieList(context, search)
+            }) {
+                Icon(
+                    imageVector = Icons.Default.Search,
+                    contentDescription = "search",
+                    tint = Color.Red
+                )
+            }
         },
+        isError = error != null
     )
+
+    error?.let { ErrorField(it) }
 }
 
 @Composable
@@ -196,7 +207,9 @@ fun MovieDetail(movie: Movie, context: Context){
         movie.urlImage
 
     Row(
-        modifier = Modifier.fillMaxWidth().padding(15.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(15.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ){
@@ -246,7 +259,9 @@ fun MovieDetail(movie: Movie, context: Context){
         }
     }
 
-    Column (modifier = Modifier.fillMaxWidth().padding(15.dp)){
+    Column (modifier = Modifier
+        .fillMaxWidth()
+        .padding(15.dp)){
         Button(
             onClick = {
                 val intent = Intent(context, AdminActivity::class.java)
@@ -269,5 +284,4 @@ fun MovieDetail(movie: Movie, context: Context){
             Text(text = "Supprimer", color = Color.White)
         }
     }
-
 }

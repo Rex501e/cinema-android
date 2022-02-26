@@ -16,4 +16,6 @@ interface ServiceMovie {
     @PATCH("film/{id}")
     fun editMovie(@Path(value="id") id: String, @Body movie: Movie): Call<Movie>
 
+    @GET("film/")
+    fun searchMovies(@Query("search") search: String): Call<List<Movie>>
 }
