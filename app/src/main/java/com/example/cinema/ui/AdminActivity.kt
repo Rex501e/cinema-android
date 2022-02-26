@@ -36,6 +36,7 @@ import retrofit2.Retrofit
 
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import com.example.cinema.service.RetrofitMovie
 
 class AdminActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,11 +44,12 @@ class AdminActivity : ComponentActivity() {
         val cvm = CategoryViewModel()
         val rvm = RealisatorViewModel()
 
-        val movie = intent.getSerializableExtra("movie") as? Movie
+        var movie = intent.getSerializableExtra("movie") as? Movie
 
         var created = false;
         if (movie == null) {
             created = true;
+            movie = Movie()
         }
         super.onCreate(savedInstanceState)
         setContent {
@@ -60,7 +62,7 @@ class AdminActivity : ComponentActivity() {
 
 // @Preview(showBackground = true, widthDp = 320, uiMode = UI_MODE_NIGHT_YES)
 @Composable()
-fun FormMovie(cvm: CategoryViewModel, rvm: RealisatorViewModel, movie: Movie?, created: Boolean){
+fun FormMovie(cvm: CategoryViewModel, rvm: RealisatorViewModel, movie: Movie, created: Boolean){
     val context = LocalContext.current
 
     LaunchedEffect(Unit, block = {
@@ -86,49 +88,43 @@ fun FormMovie(cvm: CategoryViewModel, rvm: RealisatorViewModel, movie: Movie?, c
                 .padding(10.dp),
             verticalArrangement = Arrangement.Center,
         ){
-            var title = if (movie != null) movie.titre else ""
-            StringField(title ?: "", "Titre") {
-                title = it
+            StringField(movie.titre, "Titre") {
+                movie.titre = it
             }
             Spacer(Modifier.size(16.dp))
-            var duration = if (movie != null) movie.duree else ""
-            StringField(duration?: "", "Durée (en min)") {
-                duration = it
+            StringField(movie.duree, "Durée (en min)") {
+                movie.duree = it
             }
             Spacer(Modifier.size(16.dp))
-            var budget = if (movie != null) movie.budget else ""
-            StringField(budget?: "", "Budget") {
-                budget = it
+            StringField(movie.budget, "Budget") {
+                movie.budget = it
             }
             Spacer(Modifier.size(16.dp))
-            var amount = if (movie != null) movie.montantRecette else ""
-            StringField((amount?: ""), "Revenue") {
-                amount = it
+            StringField(movie.montantRecette, "Revenue") {
+                movie.montantRecette = it
             }
             Spacer(Modifier.size(16.dp))
-            var realisator = movie?.noRea
+            val realisator = if(movie.noRea != "") movie.noRea else null
             RealisatorField(rvm, realisator)
             Spacer(Modifier.size(16.dp))
-            var category = movie?.codeCat
+            val category = if(movie.codeCat != "") movie.codeCat else null
             CategoryField(cvm, category)
             Spacer(Modifier.size(16.dp))
-            var urlImage = if (movie != null) movie.urlImage else ""
-            StringField(urlImage?: "", "Url image") {
-                urlImage = it
+            StringField(movie.urlImage, "Url image") {
+                movie.urlImage = it
             }
             Spacer(Modifier.size(16.dp))
-            var urlTrailer = if (movie != null) movie.urlTrailer else ""
-            StringField(urlTrailer?: "", "Url trailer") {
-                urlTrailer = it
+            StringField(movie.urlTrailer, "Url trailer") {
+                movie.urlTrailer = it
             }
             Spacer(Modifier.size(16.dp))
             ValidatorButton(strCreated,
                 enabled = true
             ) {
                 if (created) {
-
+                    createMovie(movie, context)
                 }else{
-
+                    updateMovie(movie, context)
                 }
 
             }
@@ -138,7 +134,7 @@ fun FormMovie(cvm: CategoryViewModel, rvm: RealisatorViewModel, movie: Movie?, c
 
 @Throws(Exception::class)
 fun createMovie(movie: Movie, context: Context) {
-    val retrofit: Retrofit? = RetrofitLogin.getTokenRetrofit(context)
+    val retrofit: Retrofit? = RetrofitMovie.getMovieRetrofit(context)
     val movieService = retrofit!!.create(ServiceMovie::class.java)
 
     try {
@@ -166,11 +162,11 @@ fun createMovie(movie: Movie, context: Context) {
 
 @Throws(Exception::class)
 fun updateMovie(movie: Movie, context: Context) {
-    val retrofit: Retrofit? = RetrofitLogin.getTokenRetrofit(context)
+    val retrofit: Retrofit? = RetrofitMovie.getMovieRetrofit(context)
     val movieService = retrofit!!.create(ServiceMovie::class.java)
 
     try {
-        movieService.createMovie(movie).enqueue(object : Callback<Movie> {
+        movieService.editMovie(movie.noFilm, movie).enqueue(object : Callback<Movie> {
             override fun onResponse(call: Call<Movie>, response: Response<Movie>) {
                 if (response.isSuccessful) {
                     if (response.body() != null) {
