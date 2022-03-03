@@ -33,10 +33,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.TextFieldValue
 import com.example.cinema.service.RetrofitToken
+import com.example.cinema.ui.bottomnav.BottomNavActivity
 import com.example.cinema.validator.UsernameState
 import retrofit2.Retrofit
 
-class AdminActivity : ComponentActivity() {
+class MovieAdminActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
 
         val cvm = CategoryViewModel()
@@ -73,7 +74,7 @@ fun FormMovie(cvm: CategoryViewModel, rvm: RealisatorViewModel, movie: Movie, cr
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(10.dp),
+            .padding(25.dp),
         verticalArrangement = Arrangement.Center,
     ){
         Text(text = buildAnnotatedString {
@@ -91,49 +92,49 @@ fun FormMovie(cvm: CategoryViewModel, rvm: RealisatorViewModel, movie: Movie, cr
                 titreState = it
                 movie.titre = it
             }
-            Spacer(Modifier.size(16.dp))
+            Spacer(Modifier.size(10.dp))
             var dureeState by mutableStateOf(movie.duree)
             StringField(dureeState, "Durée (en min)"){
                 dureeState = it
                 movie.duree = it
             }
-            Spacer(Modifier.size(16.dp))
+            Spacer(Modifier.size(10.dp))
             var dateState by mutableStateOf(movie.dateSortie)
             StringField(dateState, "Date de sortie"){
                 dateState = it
                 movie.dateSortie = it
             }
-            Spacer(Modifier.size(16.dp))
+            Spacer(Modifier.size(10.dp))
             var budgetState by mutableStateOf(movie.budget)
             StringField(budgetState, "Budget"){
                 budgetState = it
                 movie.budget = it
             }
-            Spacer(Modifier.size(16.dp))
+            Spacer(Modifier.size(10.dp))
             var amountState by mutableStateOf(movie.montantRecette)
             StringField(amountState, "Revenue"){
                 amountState = it
                 movie.montantRecette = it
             }
-            Spacer(Modifier.size(16.dp))
+            Spacer(Modifier.size(10.dp))
             val realisator = if(movie.noRea != "") movie.noRea else null
             RealisatorField(rvm, realisator, movie)
-            Spacer(Modifier.size(16.dp))
+            Spacer(Modifier.size(10.dp))
             val category = if(movie.codeCat != "") movie.codeCat else null
             CategoryField(cvm, category, movie)
-            Spacer(Modifier.size(16.dp))
+            Spacer(Modifier.size(10.dp))
             var urlImageState by mutableStateOf(movie.urlImage)
             StringField(urlImageState, "Url image"){
                 urlImageState = it
                 movie.urlImage = it
             }
-            Spacer(Modifier.size(16.dp))
+            Spacer(Modifier.size(10.dp))
             var urlTrailerState by mutableStateOf(movie.videotrailer)
             StringField(urlTrailerState, "Url trailer"){
                 urlTrailerState = it
                 movie.videotrailer = it
             }
-            Spacer(Modifier.size(16.dp))
+            Spacer(Modifier.size(10.dp))
             ValidatorButton(strCreated,
                 enabled = true
             ) {
@@ -158,7 +159,7 @@ fun createMovie(movie: Movie, context: Context) {
             override fun onResponse(call: Call<Movie>, response: Response<Movie>) {
                 if (response.isSuccessful) {
                     if (response.body() != null) {
-                        val intent = Intent(context, MovieActivity::class.java)
+                        val intent = Intent(context, BottomNavActivity::class.java)
                         context.startActivity(intent)
                         Toast.makeText(context, "Film ajouté avec succé", Toast.LENGTH_LONG).show()
                     } else {
@@ -188,7 +189,7 @@ fun updateMovie(movie: Movie, context: Context) {
             override fun onResponse(call: Call<Movie>, response: Response<Movie>) {
                 if (response.isSuccessful) {
                     if (response.body() != null) {
-                        val intent = Intent(context, MovieActivity::class.java)
+                        val intent = Intent(context, BottomNavActivity::class.java)
                         context.startActivity(intent)
                         Toast.makeText(context, "Film modifié avec succès", Toast.LENGTH_LONG).show()
                     } else {

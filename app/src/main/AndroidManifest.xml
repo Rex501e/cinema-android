@@ -16,11 +16,13 @@
         android:usesCleartextTraffic="true"
         >
         <activity
-            android:name=".ui.AdminActivity"
-            android:exported="false" />
+            android:name=".ui.MovieAdminActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Cinema.NoActionBar"/>
         <activity
-            android:name=".ui.MovieActivity"
-            android:exported="false" />
+            android:name=".ui.bottomnav.BottomNavActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Cinema.NoActionBar"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"

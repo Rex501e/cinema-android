@@ -23,11 +23,15 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import com.example.cinema.domain.Login
 import com.example.cinema.exception.Exception
 import com.example.cinema.service.RetrofitLogin
 import com.example.cinema.service.ServiceLogin
 import com.example.cinema.service.SessionManager
+import com.example.cinema.ui.bottomnav.BottomNavActivity
 import com.example.cinema.validator.PasswordState
 import com.example.cinema.validator.UsernameState
 import com.google.gson.Gson
@@ -88,7 +92,7 @@ fun signin(username: String, password: String, context: Context) {
                             val token = json.getString("token")
                             Toast.makeText(context, "Authentification réussie !!!", Toast.LENGTH_LONG).show()
                             SessionManager(context).saveAuthToken(token)
-                            val intent = Intent(context, MovieActivity::class.java)
+                            val intent = Intent(context, BottomNavActivity::class.java)
                             context.startActivity(intent)
                         } catch (e: JSONException) {
                             Exception(e.message, "Erreur Appel WS Connexion")

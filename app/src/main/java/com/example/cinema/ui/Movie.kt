@@ -2,9 +2,6 @@ package com.example.cinema.ui;
 
 import android.content.Context
 import android.content.Intent
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
@@ -14,43 +11,24 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
 import com.example.cinema.data.MovieViewModel
 import com.example.cinema.domain.Movie
-import com.example.cinema.ui.theme.CinemaTheme
 import com.example.cinema.validator.SearchState
 
 
-class MovieActivity : ComponentActivity() {
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        val vm = MovieViewModel()
-        super.onCreate(savedInstanceState)
-        setContent {
-            CinemaTheme {
-                Greetings(vm)
-            }
-        }
-    }
-}
-
-
 @Composable
-fun Greetings(vm: MovieViewModel) {
+fun Movies() {
+    val vm = MovieViewModel()
     val context = LocalContext.current
 
     LaunchedEffect(Unit, block = {
@@ -58,74 +36,45 @@ fun Greetings(vm: MovieViewModel) {
     })
 
 
-    Scaffold(
-        topBar = {
-            topBar(context)
-        }
-    ) {
-        LazyColumn(modifier = Modifier.padding(vertical = 4.dp)) {
-            item {
-                Surface(
-                    modifier = Modifier.padding(vertical = 4.dp, horizontal = 6.dp)
+    LazyColumn() {
+        item {
+            Surface(
+                modifier = Modifier.padding(horizontal = 6.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                        .padding(vertical = 20.dp),
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .wrapContentHeight()
-                            .padding(vertical = 24.dp),
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically
+                    Column(
+                        modifier = Modifier.weight(1f)
                     ) {
-                        Column(
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            val searchState = remember { SearchState() }
-                            SearchTxtField(searchState.text, searchState.error, context, vm) {
-                                searchState.text = it
-                                searchState.validate()
-                            }
+                        val searchState = remember { SearchState() }
+                        SearchTxtFieldForMovie(searchState.text, searchState.error, context, vm) {
+                            searchState.text = it
+                            searchState.validate()
                         }
                     }
                 }
             }
-            items(items = vm.movieList) { movie ->
-                Greeting(movie = movie, context)
-            }
+        }
+        items(items = vm.movieList) { movie ->
+            Movie(movie = movie, context)
         }
     }
 }
 
 @Composable
-fun topBar(context: Context) {
-    TopAppBar(
-        title = {
-            Text(
-                text = buildAnnotatedString {
-                    withStyle(style = SpanStyle(color = Color.Red)) {
-                        append("C")
-                    }
-                    withStyle(style = SpanStyle(color = Color.White)) {
-                        append("inéma")
-                    }
-                }, fontSize = 30.sp
-            )
-        },
-        actions = {
-            IconButton(onClick = {
-                val intent = Intent(context, AdminActivity::class.java)
-                context.startActivity(intent)
-            }) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "add",
-                )
-            }
-        },
-    )
-}
-
-@Composable
-fun SearchTxtField(search: String, error: String?, context: Context, vm: MovieViewModel, onSearchChanged: (String) -> Unit) {
+fun SearchTxtFieldForMovie(
+    search: String,
+    error: String?,
+    context: Context,
+    vm: MovieViewModel,
+    onSearchChanged: (String) -> Unit
+) {
     TextField(
         value = search,
         onValueChange = { value -> onSearchChanged(value) },
@@ -150,7 +99,7 @@ fun SearchTxtField(search: String, error: String?, context: Context, vm: MovieVi
 }
 
 @Composable
-fun Greeting(movie: Movie, context: Context) {
+fun Movie(movie: Movie, context: Context) {
     var expanded by remember { mutableStateOf(false) }
 
     val extraPadding by animateDpAsState(
@@ -169,7 +118,7 @@ fun Greeting(movie: Movie, context: Context) {
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
-        ){
+        ) {
             Row(modifier = Modifier.padding(15.dp)) {
                 Column(
                     modifier = Modifier
@@ -200,8 +149,8 @@ fun Greeting(movie: Movie, context: Context) {
 }
 
 @Composable
-fun MovieDetail(movie: Movie, context: Context){
-    val url = if(movie.urlImage == "")
+fun MovieDetail(movie: Movie, context: Context) {
+    val url = if (movie.urlImage == "")
         "https://media.istockphoto.com/vectors/no-image-available-sign-vector-id922962354?k=20&m=922962354&s=612x612&w=0&h=f-9tPXlFXtz9vg_-WonCXKCdBuPUevOBkp3DQ-i0xqo="
     else
         movie.urlImage
@@ -212,8 +161,8 @@ fun MovieDetail(movie: Movie, context: Context){
             .padding(15.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
-    ){
-        Box(){
+    ) {
+        Box() {
             Image(
                 painter = rememberImagePainter(url),
                 contentDescription = null,
@@ -242,12 +191,12 @@ fun MovieDetail(movie: Movie, context: Context){
                 fontSize = 15.sp
             )
             Text(
-                text = "Réalisateur: " + movie.realisateur?.nomRea+" "+movie.realisateur?.prenRea,
+                text = "Réalisateur: " + movie.realisateur?.nomRea + " " + movie.realisateur?.prenRea,
                 color = Color.White,
                 fontSize = 15.sp
             )
             Text(
-                text = "Budget: " + movie.budget+ " €",
+                text = "Budget: " + movie.budget + " €",
                 color = Color.White,
                 fontSize = 15.sp
             )
@@ -259,12 +208,14 @@ fun MovieDetail(movie: Movie, context: Context){
         }
     }
 
-    Column (modifier = Modifier
-        .fillMaxWidth()
-        .padding(15.dp)){
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(15.dp)
+    ) {
         Button(
             onClick = {
-                val intent = Intent(context, AdminActivity::class.java)
+                val intent = Intent(context, MovieAdminActivity::class.java)
                 intent.putExtra("movie", movie);
                 context.startActivity(intent)
             },
@@ -276,7 +227,7 @@ fun MovieDetail(movie: Movie, context: Context){
         }
         Spacer(Modifier.size(10.dp))
         Button(
-            onClick = {  },
+            onClick = { },
             modifier = Modifier.fillMaxWidth(),
             contentPadding = PaddingValues(16.dp),
             colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red),
