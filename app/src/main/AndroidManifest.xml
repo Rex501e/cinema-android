@@ -20,6 +20,14 @@
             android:exported="false"
             android:theme="@style/Theme.Cinema.NoActionBar"/>
         <activity
+            android:name=".ui.ActorAdminActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Cinema.NoActionBar"/>
+        <activity
+            android:name=".ui.CharacterAdminActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Cinema.NoActionBar"/>
+        <activity
             android:name=".ui.bottomnav.BottomNavActivity"
             android:exported="false"
             android:theme="@style/Theme.Cinema.NoActionBar"/>

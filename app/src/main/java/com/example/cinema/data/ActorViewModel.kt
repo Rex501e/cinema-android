@@ -40,7 +40,7 @@ class ActorViewModel : ViewModel() {
                                 if (actors != null) {
                                     _actorsList.addAll(actors)
                                     _actorsList.forEach {
-                                        getCharacterByActId(context, it.noAct)
+                                        getCharacterByActId(context, it.noAct!!)
                                     }
                                 }
                             }
@@ -59,7 +59,7 @@ class ActorViewModel : ViewModel() {
         }
     }
 
-    fun getCharacterByActId(context: Context, actId: Int){
+    fun getCharacterByActId(context: Context, actId: String){
         val retrofit: Retrofit? = RetrofitToken.getRetrofit(context)
         val serviceCharacter: ServiceCharacter = retrofit!!.create(ServiceCharacter::class.java)
         val call: Call<List<Character>> = serviceCharacter.getCharactersByActor(actId)

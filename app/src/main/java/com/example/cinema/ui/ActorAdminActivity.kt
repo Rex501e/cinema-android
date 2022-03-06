@@ -32,44 +32,35 @@ import retrofit2.Response
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.TextFieldValue
+import com.example.cinema.domain.Actor
 import com.example.cinema.service.RetrofitToken
+import com.example.cinema.service.ServiceActor
 import com.example.cinema.ui.bottomnav.BottomNavActivity
 import com.example.cinema.validator.UsernameState
 import retrofit2.Retrofit
 
 class ActorAdminActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-
-        val cvm = CategoryViewModel()
-        val rvm = RealisatorViewModel()
-
-        var movie = intent.getSerializableExtra("movie") as? Movie
+        var actor = intent.getSerializableExtra("actor") as? Actor
 
         var created = false;
-        if (movie == null) {
+        if (actor == null) {
             created = true;
-            movie = Movie()
+            actor = Actor()
         }
         super.onCreate(savedInstanceState)
         setContent {
             CinemaTheme {
-                FormMovie(cvm, rvm, movie, created)
+                FormActor(actor, created)
             }
         }
     }
 }
 
-// @Preview(showBackground = true, widthDp = 320, uiMode = UI_MODE_NIGHT_YES)
 @Composable()
-fun FormActor(cvm: CategoryViewModel, rvm: RealisatorViewModel, movie: Movie, created: Boolean){
+fun FormActor(actor: Actor, created: Boolean){
     val context = LocalContext.current
-
-    LaunchedEffect(Unit, block = {
-        cvm.getCategoryList(context)
-        rvm.getRealisatorList(context)
-    })
-
-    val strCreated = if(created) "Ajouter" else "Modifer"
+    val strCreated = if(created) "Ajouter" else "Modifier"
 
     Column(
         modifier = Modifier
@@ -79,7 +70,7 @@ fun FormActor(cvm: CategoryViewModel, rvm: RealisatorViewModel, movie: Movie, cr
     ){
         Text(text = buildAnnotatedString {
             withStyle(style = SpanStyle(color = Color.White)) {
-                append("$strCreated un film")
+                append("$strCreated un acteur")
             }
         }, fontSize = 30.sp)
         Column(
@@ -87,19 +78,52 @@ fun FormActor(cvm: CategoryViewModel, rvm: RealisatorViewModel, movie: Movie, cr
                 .padding(10.dp),
             verticalArrangement = Arrangement.Center,
         ){
+            var nomState by mutableStateOf(actor.nomAct)
+            StringField(nomState, "Nom"){
+                nomState = it
+                actor.nomAct = it
+            }
+            Spacer(Modifier.size(10.dp))
+            var prenState by mutableStateOf(actor.prenAct)
+            StringField(prenState, "Prenom"){
+                prenState = it
+                actor.prenAct = it
+            }
+            Spacer(Modifier.size(10.dp))
+            var dateNaissState by mutableStateOf(if (actor.dateNaiss != null) actor.dateNaiss else "")
+            StringField(dateNaissState!!, "Date de naissance"){
+                dateNaissState = it
+                actor.dateNaiss = it
+            }
+            Spacer(Modifier.size(10.dp))
+            var dateDecesState by mutableStateOf(if (actor.dateDeces != null) actor.dateDeces else "")
+            StringField(dateDecesState!!, "Date deces"){
+                dateDecesState = it
+                actor.dateDeces = it
+            }
+            Spacer(Modifier.size(10.dp))
+            ValidatorButton(strCreated,
+                enabled = true
+            ) {
+                if (created) {
+                    createActor(actor, context)
+                }else{
+                    updateActor(actor, context)
+                }
 
+            }
         }
     }
 }
 
 @Throws(Exception::class)
-fun createActor(movie: Movie, context: Context) {
+fun createActor(actor: Actor, context: Context) {
     val retrofit: Retrofit? = RetrofitToken.getRetrofit(context)
-    val movieService = retrofit!!.create(ServiceMovie::class.java)
+    val actorService = retrofit!!.create(ServiceActor::class.java)
 
     try {
-        movieService.createMovie(movie).enqueue(object : Callback<Movie> {
-            override fun onResponse(call: Call<Movie>, response: Response<Movie>) {
+        actorService.createActor(actor).enqueue(object : Callback<Actor> {
+            override fun onResponse(call: Call<Actor>, response: Response<Actor>) {
                 if (response.isSuccessful) {
                     if (response.body() != null) {
                         val intent = Intent(context, BottomNavActivity::class.java)
@@ -110,7 +134,7 @@ fun createActor(movie: Movie, context: Context) {
                     }
                 }
             }
-            override fun onFailure(call: Call<Movie>, t: Throwable ) {
+            override fun onFailure(call: Call<Actor>, t: Throwable ) {
                 Toast.makeText(context,"Erreur de connexion", Toast.LENGTH_LONG ) .show()
             }
         })
@@ -123,13 +147,13 @@ fun createActor(movie: Movie, context: Context) {
 }
 
 @Throws(Exception::class)
-fun updateActor(movie: Movie, context: Context) {
+fun updateActor(actor: Actor, context: Context) {
     val retrofit: Retrofit? = RetrofitToken.getRetrofit(context)
-    val movieService = retrofit!!.create(ServiceMovie::class.java)
+    val serviceActor = retrofit!!.create(ServiceActor::class.java)
 
     try {
-        movieService.editMovie(movie.noFilm ?: "-1", movie).enqueue(object : Callback<Movie> {
-            override fun onResponse(call: Call<Movie>, response: Response<Movie>) {
+        serviceActor.editActor(actor.noAct ?: "-1", actor).enqueue(object : Callback<Actor> {
+            override fun onResponse(call: Call<Actor>, response: Response<Actor>) {
                 if (response.isSuccessful) {
                     if (response.body() != null) {
                         val intent = Intent(context, BottomNavActivity::class.java)
@@ -140,7 +164,7 @@ fun updateActor(movie: Movie, context: Context) {
                     }
                 }
             }
-            override fun onFailure(call: Call<Movie>, t: Throwable ) {
+            override fun onFailure(call: Call<Actor>, t: Throwable ) {
                 Toast.makeText(context,"Erreur de connexion", Toast.LENGTH_LONG ) .show()
             }
         })

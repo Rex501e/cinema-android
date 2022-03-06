@@ -201,9 +201,27 @@ fun CharacterDetail(actor: Actor, context: Context) {
     ) {
         Button(
             onClick = {
-                val intent = Intent(context, MovieAdminActivity::class.java)
+                val intent = Intent(context, CharacterAdminActivity::class.java)
                 intent.putExtra("actor", actor);
                 context.startActivity(intent)
+            },
+            modifier = Modifier.fillMaxWidth(),
+            contentPadding = PaddingValues(16.dp),
+            colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red),
+        ) {
+            Text(text = "Ajouter un personnage", color = Color.White)
+        }
+        Spacer(Modifier.size(10.dp))
+        Button(
+            onClick = {
+                try{
+                    val intent = Intent(context, ActorAdminActivity::class.java)
+                    intent.putExtra("actor", actor);
+                    context.startActivity(intent)
+                }catch (e: Exception){
+                    var e = 1
+                }
+
             },
             modifier = Modifier.fillMaxWidth(),
             contentPadding = PaddingValues(16.dp),

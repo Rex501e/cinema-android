@@ -30,9 +30,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.cinema.ui.Actors
-import com.example.cinema.ui.MovieAdminActivity
-import com.example.cinema.ui.Movies
+import com.example.cinema.ui.*
 
 class BottomNavActivity : AppCompatActivity() {
 
@@ -62,7 +60,7 @@ fun MainScreenView(){
 fun BottomNavigation(navController: NavController) {
     val items = listOf(
         BottomNavItem.Movies,
-        BottomNavItem.Characters
+        BottomNavItem.Actors
     )
     BottomNavigation(
         backgroundColor = Color.Red,
@@ -140,7 +138,7 @@ fun TopBar() {
                 Divider()
                 DropdownMenuItem(onClick = {
                     expanded.value = false
-                    val intent = Intent(context, MovieAdminActivity::class.java)
+                    val intent = Intent(context, ActorAdminActivity::class.java)
                     context.startActivity(intent)
                 }) {
                     Text(text = "Ajouter un acteur")
@@ -158,7 +156,7 @@ fun NavigationGraph(navController: NavHostController) {
         composable(BottomNavItem.Movies.screen_route) {
             Movies()
         }
-        composable(BottomNavItem.Characters.screen_route) {
+        composable(BottomNavItem.Actors.screen_route) {
             Actors()
         }
     }
