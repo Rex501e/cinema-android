@@ -42,7 +42,6 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 
-// @Preview(showBackground = true, widthDp = 320, uiMode = UI_MODE_NIGHT_YES)
 @Composable
 fun SignInScreen() {
     val context = LocalContext.current
@@ -53,7 +52,14 @@ fun SignInScreen() {
             .padding(16.dp),
         verticalArrangement = Arrangement.Center,
     ){
-        Title()
+        Text(text = buildAnnotatedString {
+            withStyle(style = SpanStyle(color = Color.Red)) {
+                append("C")
+            }
+            withStyle(style = SpanStyle(color = Color.White)) {
+                append("inéma")
+            }
+        }, fontSize = 30.sp)
         Spacer(Modifier.size(16.dp))
         val usernameState = remember { UsernameState() }
         Username(usernameState.text, usernameState.error) {
@@ -115,18 +121,6 @@ fun signin(username: String, password: String, context: Context) {
             "Erreur Appel WS Connexion"
         )
     }
-}
-
-@Composable
-fun Title() {
-    Text(text = buildAnnotatedString {
-        withStyle(style = SpanStyle(color = Color.Red)) {
-            append("C")
-        }
-        withStyle(style = SpanStyle(color = Color.White)) {
-            append("inéma")
-        }
-    }, fontSize = 30.sp)
 }
 
 @Composable
