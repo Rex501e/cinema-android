@@ -174,23 +174,24 @@ fun CharacterDetail(actor: Actor, context: Context) {
             )
             if (actor.dateDeces != null) {
                 Text(
-                    text = "Date de sortie: " + actor.dateDeces,
+                    text = "Date décès: " + actor.dateDeces,
                     color = Color.White,
                     fontSize = 15.sp
                 )
             }
             Spacer(Modifier.size(16.dp))
-            Text(
-                text = "Personnage joué:",
-                color = Color.White,
-                fontSize = 15.sp
-            )
-            for (item in actor.characters){
+            if (actor.characters.isNotEmpty()) {
                 Text(
-                    text = " - "+ item.film?.titre+ ": "+ item.nomPers
+                    text = "Personnage joué:",
+                    color = Color.White,
+                    fontSize = 15.sp
                 )
+                for (item in actor.characters){
+                    Text(
+                        text = " - "+ item.film?.titre+ ": "+ item.nomPers
+                    )
+                }
             }
-
         }
     }
 
@@ -214,29 +215,15 @@ fun CharacterDetail(actor: Actor, context: Context) {
         Spacer(Modifier.size(10.dp))
         Button(
             onClick = {
-                try{
-                    val intent = Intent(context, ActorAdminActivity::class.java)
-                    intent.putExtra("actor", actor);
-                    context.startActivity(intent)
-                }catch (e: Exception){
-                    var e = 1
-                }
-
+                val intent = Intent(context, ActorAdminActivity::class.java)
+                intent.putExtra("actor", actor);
+                context.startActivity(intent)
             },
             modifier = Modifier.fillMaxWidth(),
             contentPadding = PaddingValues(16.dp),
             colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red),
         ) {
             Text(text = "Modifier", color = Color.White)
-        }
-        Spacer(Modifier.size(10.dp))
-        Button(
-            onClick = { },
-            modifier = Modifier.fillMaxWidth(),
-            contentPadding = PaddingValues(16.dp),
-            colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red),
-        ) {
-            Text(text = "Supprimer", color = Color.White)
         }
     }
 }

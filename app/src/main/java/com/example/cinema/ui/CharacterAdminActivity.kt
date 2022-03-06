@@ -19,11 +19,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.cinema.data.CategoryViewModel
-import com.example.cinema.data.RealisatorViewModel
-import com.example.cinema.domain.Movie
 import com.example.cinema.exception.Exception
-import com.example.cinema.service.ServiceMovie
 import com.example.cinema.ui.theme.CinemaTheme
 import retrofit2.Call
 import retrofit2.Callback
@@ -31,27 +27,25 @@ import retrofit2.Response
 
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.input.TextFieldValue
 import com.example.cinema.data.MovieViewModel
 import com.example.cinema.domain.Actor
 import com.example.cinema.domain.Character
 import com.example.cinema.service.RetrofitToken
 import com.example.cinema.service.ServiceCharacter
 import com.example.cinema.ui.bottomnav.BottomNavActivity
-import com.example.cinema.validator.UsernameState
 import retrofit2.Retrofit
 
 class CharacterAdminActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         val mvm = MovieViewModel()
         val actor = intent.getSerializableExtra("actor") as? Actor
+        val character = Character()
+        character.noAct = actor!!.noAct
 
         super.onCreate(savedInstanceState)
         setContent {
             CinemaTheme {
-                if (actor != null) {
-                    FormCharacter(mvm, actor)
-                }
+                FormCharacter(mvm, character)
             }
         }
     }
@@ -88,10 +82,9 @@ fun createCharacter(character: Character, context: Context) {
 }
 
 @Composable()
-fun FormCharacter(mvm: MovieViewModel, actor: Actor){
+fun FormCharacter(mvm: MovieViewModel, character: Character){
     val context = LocalContext.current
-    val character = Character()
-    character.noAct = actor.noAct
+
     LaunchedEffect(Unit, block = {
         mvm.getMovieList(context)
     })
@@ -112,9 +105,9 @@ fun FormCharacter(mvm: MovieViewModel, actor: Actor){
                 .padding(10.dp),
             verticalArrangement = Arrangement.Center,
         ){
-            var name by mutableStateOf(character.nomPers)
-            StringField(name, "Nom personnage"){
-                name = it
+            var nomPersState by mutableStateOf(character.nomPers)
+            StringField(nomPersState, "Nom du personnage"){
+                nomPersState = it
                 character.nomPers = it
             }
             Spacer(Modifier.size(10.dp))

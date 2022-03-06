@@ -13,6 +13,6 @@ interface ServiceCharacter {
     @GET("personnage/acteur/{id}")
     fun getCharactersByActor(@Path(value="id") id: String): Call<List<Character>>
 
-    @POST("personnage")
+    @POST("personnage/create")
     fun create(@Body character: Character): Call<Character>
 }
