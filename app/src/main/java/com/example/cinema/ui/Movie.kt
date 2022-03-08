@@ -79,7 +79,7 @@ fun SearchTxtFieldForMovie(
         value = search,
         onValueChange = { value -> onSearchChanged(value) },
         modifier = Modifier.fillMaxWidth(),
-        label = { Text(text = "Rechercher", color = Color.Gray) },
+        label = { Text(text = "Recherche par titre, réalisateur, personnage", color = Color.Gray) },
         colors = TextFieldDefaults.textFieldColors(textColor = Color.White),
         trailingIcon = {
             IconButton(onClick = {
