@@ -16,4 +16,7 @@ interface ServiceActor {
 
     @PATCH("acteur/{id}")
     fun editActor(@Path(value="id") id: String, @Body actor: Actor): Call<Actor>
+
+    @GET("acteur/")
+    fun searchActor(@Query("search") search: String): Call<List<Actor>>
 }

@@ -27,7 +27,12 @@ class ActorViewModel : ViewModel() {
     fun getCharactersList(context: Context, search: String = "") {
         val retrofit: Retrofit? = RetrofitToken.getRetrofit(context)
         val serviceActor: ServiceActor = retrofit!!.create(ServiceActor::class.java)
-        val call: Call<List<Actor>> = serviceActor.getActors()
+
+        val call: Call<List<Actor>> = if (search === "") {
+            serviceActor.getActors()
+        } else {
+            serviceActor.searchActor(search)
+        }
 
         viewModelScope.launch {
             try {
