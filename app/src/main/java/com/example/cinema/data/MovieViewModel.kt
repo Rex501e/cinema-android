@@ -1,6 +1,7 @@
 package com.example.cinema.data
 
 import android.content.Context
+import android.widget.Toast
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -11,10 +12,7 @@ import com.example.cinema.domain.Movie
 import com.example.cinema.service.RetrofitToken
 import com.example.cinema.service.ServiceMovie
 import kotlinx.coroutines.launch
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
+import retrofit2.*
 
 class MovieViewModel: ViewModel() {
     private val _movieList = mutableStateListOf<Movie>()
@@ -56,6 +54,35 @@ class MovieViewModel: ViewModel() {
             } catch (e: Exception) {
                 errorMessage = e.message.toString()
             }
+        }
+    }
+
+    fun deleteMovie(context: Context, movie: Movie)
+    {
+        val retrofit: Retrofit? = RetrofitToken.getRetrofit(context)
+        val serviceMovie: ServiceMovie = retrofit!!.create(ServiceMovie::class.java)
+
+        try {
+            movie.noFilm?.let {
+                serviceMovie.deleteMovie(it).enqueue(object : Callback<Any> {
+                    override fun onResponse(call: Call<Any>, response: Response<Any>) {
+                        if (response.isSuccessful) {
+                            Toast.makeText(context, "Film bien supprimé", Toast.LENGTH_LONG).show()
+                        } else {
+                            Toast.makeText(context, "Erreur durant la suppression du film", Toast.LENGTH_LONG).show()
+                        }
+                    }
+
+                    override fun onFailure(call: Call<Any?>, t: Throwable ) {
+                        Toast.makeText(context,"Erreur de connexion", Toast.LENGTH_LONG ) .show()
+                    }
+                })
+            }
+        } catch (e: com.example.cinema.exception.Exception) {
+            com.example.cinema.exception.Exception(
+                e.message,
+                "Erreur Appel WS Connexion"
+            )
         }
     }
 }

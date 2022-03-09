@@ -62,7 +62,7 @@ fun Movies() {
             }
         }
         items(items = vm.movieList) { movie ->
-            Movie(movie = movie, context)
+            Movie(movie = movie, context, vm)
         }
     }
 }
@@ -99,7 +99,7 @@ fun SearchTxtFieldForMovie(
 }
 
 @Composable
-fun Movie(movie: Movie, context: Context) {
+fun Movie(movie: Movie, context: Context, vm: MovieViewModel) {
     var expanded by remember { mutableStateOf(false) }
 
     val extraPadding by animateDpAsState(
@@ -142,14 +142,14 @@ fun Movie(movie: Movie, context: Context) {
                 }
             }
             if (expanded) {
-                MovieDetail(movie, context);
+                MovieDetail(movie, context, vm);
             }
         }
     }
 }
 
 @Composable
-fun MovieDetail(movie: Movie, context: Context) {
+fun MovieDetail(movie: Movie, context: Context, vm: MovieViewModel) {
     val url = if (movie.urlImage == "")
         "https://media.istockphoto.com/vectors/no-image-available-sign-vector-id922962354?k=20&m=922962354&s=612x612&w=0&h=f-9tPXlFXtz9vg_-WonCXKCdBuPUevOBkp3DQ-i0xqo="
     else
@@ -227,7 +227,7 @@ fun MovieDetail(movie: Movie, context: Context) {
         }
         Spacer(Modifier.size(10.dp))
         Button(
-            onClick = { },
+            onClick = { vm.deleteMovie(context, movie) },
             modifier = Modifier.fillMaxWidth(),
             contentPadding = PaddingValues(16.dp),
             colors = ButtonDefaults.buttonColors(backgroundColor = Color.Red),
