@@ -1,6 +1,8 @@
 package com.example.cinema.data
 
 import android.content.Context
+import android.util.*
+import android.util.Log.ERROR
 import android.widget.Toast
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -64,8 +66,8 @@ class MovieViewModel: ViewModel() {
 
         try {
             movie.noFilm?.let {
-                serviceMovie.deleteMovie(it).enqueue(object : Callback<Any> {
-                    override fun onResponse(call: Call<Any>, response: Response<Any>) {
+                serviceMovie.deleteMovie(it).enqueue(object : Callback<Void> {
+                    override fun onResponse(call: Call<Void>, response: Response<Void>) {
                         if (response.isSuccessful) {
                             Toast.makeText(context, "Film bien supprimé", Toast.LENGTH_LONG).show()
                         } else {
@@ -73,11 +75,12 @@ class MovieViewModel: ViewModel() {
                         }
                     }
 
-                    override fun onFailure(call: Call<Any?>, t: Throwable ) {
-                        Toast.makeText(context,"Erreur de connexion", Toast.LENGTH_LONG ) .show()
+                    override fun onFailure(call: Call<Void>, t: Throwable ) {
+                        Toast.makeText(context,"Erreur au niveau de la réponse", Toast.LENGTH_LONG ) .show()
                     }
                 })
             }
+            _movieList.remove(movie)
         } catch (e: com.example.cinema.exception.Exception) {
             com.example.cinema.exception.Exception(
                 e.message,

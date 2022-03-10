@@ -20,5 +20,5 @@ interface ServiceMovie {
     fun searchMovies(@Query("search") search: String): Call<List<Movie>>
 
     @DELETE("film/{id}")
-    fun deleteMovie(@Path(value = "id") id: String): Call<Any>
+    fun deleteMovie(@Path(value = "id") id: String): Call<Void>
 }
